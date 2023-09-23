@@ -3,19 +3,13 @@ name: CI/CD Workflow
 on: [push]
 
 env:
-  WORKON_HOME: ~/.venvs/
-  PIPENV_NOSPIN: 1
-  PIPENV_CACHE_DIR: /tmp/.pip-cache
+  WORKON_HOME: /home/runner/.local/share/virtualenvs
   REPOSITORY_NAME: ${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
 
 jobs:
   build:
     name: ビルド
     runs-on: ubuntu-latest
-    env:
-      WORKON_HOME: ~/.venvs/
-      PIPENV_NOSPIN: 1
-      PIPENV_CACHE_DIR: /tmp/.pip-cache
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -28,7 +22,7 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
-        path: ~/.venvs/${{ env.REPOSITORY_NAME }}-*
+        path: /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
     - name: Install dependencies
       run: |
@@ -51,7 +45,7 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
-        path: ~/.venvs/${{ env.REPOSITORY_NAME }}-*
+        path: /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
