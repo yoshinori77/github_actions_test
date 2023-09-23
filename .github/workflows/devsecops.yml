@@ -1,0 +1,33 @@
+name: CI/CD Workflow
+
+on: [push]
+
+env:
+  WORKON_HOME: ~/.venvs/
+  REPOSITORY_NAME: ${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+
+jobs:
+  build:
+    name: ビルド
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.venvs/${{ env.REPOSITORY_NAME }}-*
+        key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+    - name: Install dependencies
+      run: |
+        pip install pipenv
+        pipenv sync --dev
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
+    - name: Run unit tests
+      run: |
+        pipenv run pytest
