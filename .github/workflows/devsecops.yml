@@ -4,6 +4,8 @@ on: [push]
 
 env:
   WORKON_HOME: ~/.venvs/
+  PIPENV_NOSPIN: 1
+  PIPENV_CACHE_DIR: /tmp/.pip-cache
   REPOSITORY_NAME: ${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
 
 jobs:
