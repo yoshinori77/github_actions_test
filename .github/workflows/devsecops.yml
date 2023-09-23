@@ -50,6 +50,9 @@ jobs:
     - name: Install pipenv
       run: |
         pip install pipenv
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/python-3.10@master
       env:
