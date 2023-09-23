@@ -47,9 +47,6 @@ jobs:
       with:
         path: /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 30
     - name: Install pipenv
       run: |
         pip install pipenv
