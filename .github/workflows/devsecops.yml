@@ -40,6 +40,7 @@ jobs:
     - name: Install pipenv
       run: |
         pip install pipenv
+        pipenv requirements --dev > requirements.txt
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
