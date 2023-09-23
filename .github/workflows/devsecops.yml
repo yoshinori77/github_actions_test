@@ -22,7 +22,9 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
-        path: /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
+        path: |
+          /opt/hostedtoolcache/Python/
+          /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
     - name: Install dependencies
       run: |
@@ -45,7 +47,9 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
-        path: /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
+        path: |
+          /opt/hostedtoolcache/Python/
+          /home/runner/.local/share/virtualenvs/${{ env.REPOSITORY_NAME }}-*
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
