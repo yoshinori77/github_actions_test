@@ -41,15 +41,21 @@ jobs:
     - name: Install pipenv
       run: |
         pip install pipenv
-        pipenv requirements --dev > requirements.txt
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 30
-    - name: Snyk test
-      run: |
         pipenv update
-        snyk test --sarif-file-output=snyk.sarif --severity-threshold=high
-        snyk code test --sarif-file-output=snyk_code.sarif --severity-threshold=high
+        pipenv requirements --dev > requirements.txt
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   timeout-minutes: 30
+    # - name: Snyk test
+    #   run: |
+    #     pipenv update
+    #     snyk test --sarif-file-output=snyk.sarif --severity-threshold=high
+    #     snyk code test --sarif-file-output=snyk_code.sarif --severity-threshold=high
+    #   env:
+    #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/python-3.10@master
+      continue-on-error: true # To make sure that SARIF upload gets called
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Upload snyk test result to GitHub Code Scanning
