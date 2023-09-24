@@ -48,9 +48,12 @@ jobs:
     #   timeout-minutes: 30
     - name: Snyk test
       continue-on-error: true
-      run: |
-        snyk test --sarif-file-output=snyk.sarif --severity-threshold=high
-        snyk code test --sarif-file-output=snyk_code.sarif --severity-threshold=high
+      run: snyk test --sarif-file-output=snyk.sarif --severity-threshold=high
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    - name: Snyk code test
+      continue-on-error: true
+      run: snyk code test --sarif-file-output=snyk_code.sarif --severity-threshold=high
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Upload snyk test result to GitHub Code Scanning
