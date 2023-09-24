@@ -51,24 +51,24 @@ jobs:
         pipenv requirements --dev > requirements.txt
     - name: Snyk test
       continue-on-error: true
-      run: snyk test --sarif-file-output=snyk.sarif --severity-threshold=high
+      run: snyk test --severity-threshold=high > snyk.txt
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Snyk code test
       continue-on-error: true
-      run: snyk code test --sarif-file-output=snyk_code.sarif --severity-threshold=high
+      run: snyk code test --severity-threshold=high > snyk_code.txt
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 30
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   timeout-minutes: 30
     - name: Display snyk test result
       run: |
         echo '# Security Check： Open source vulnerabilities (SCA) :rocket:' >> $GITHUB_STEP_SUMMARY
         # sed で先頭行と末尾行の不要な罫線を消す
-        cat snyk.sarif | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
+        cat snyk.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
     - name: Display snyk code test result
       run: |
         echo '# Security Check： Static Code Analysis (SAST) :rocket:' >> $GITHUB_STEP_SUMMARY
         # sed で先頭行と末尾行の不要な罫線を消す
-        cat snyk_code.sarif | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
+        cat snyk_code.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
