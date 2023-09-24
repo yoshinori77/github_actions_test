@@ -6,6 +6,12 @@ env:
   WORKON_HOME: /home/runner/.local/share/virtualenvs
   REPOSITORY_NAME: ${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
 
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  statuses: write
+
 jobs:
   build:
     name: ビルド
