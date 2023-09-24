@@ -69,10 +69,10 @@ jobs:
     - name: Display snyk test result
       run: |
         echo '# Security Check： Open source vulnerabilities (SCA) :rocket:' >> $GITHUB_STEP_SUMMARY
-        # sed で先頭行と末尾行の不要な罫線を消す
-        cat -A snyk.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
+        # sedでカラーシーケンスを除去
+        cat snyk.txt | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"  >> $GITHUB_STEP_SUMMARY
     - name: Display snyk code test result
       run: |
         echo '# Security Check： Static Code Analysis (SAST) :rocket:' >> $GITHUB_STEP_SUMMARY
-        # sed で先頭行と末尾行の不要な罫線を消す
-        cat -v snyk_code.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
+        # sedでカラーシーケンスを除去
+        cat snyk_code.txt | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"  >> $GITHUB_STEP_SUMMARY
