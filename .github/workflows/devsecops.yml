@@ -53,43 +53,26 @@ jobs:
       id: snyk-test-output
       continue-on-error: true
       run: |
-        snyk_test_result=$(snyk test --severity-threshold=high)
-        echo $snyk_test_result
-        echo "snyk_test_result=$snyk_test_result" >> "$GITHUB_OUTPUT"
-        #  > snyk.txt
+        snyk test --severity-threshold=high > snyk.txt
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Snyk code test
       id: snyk-code-test-output
       continue-on-error: true
       run: |
-        snyk_code_test_result=$(snyk code test --severity-threshold=high)
-        echo "snyk_code_test_result=$snyk_code_test_result" >> "$GITHUB_OUTPUT"
-        # snyk code test --severity-threshold=high > snyk_code.txt
+        snyk code test --severity-threshold=high > snyk_code.txt
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
     #   timeout-minutes: 30
-    - name: Remove ANSI color escape sequences
-      uses: marcransome/remove-ansi-colors@v1
-      id: remove-ansi-colors-from-snyk-test
-      with:
-        colored: ${{ steps.snyk-test-output.outputs.snyk_test_result }}
-    - name: Remove ANSI color escape sequences
-      uses: marcransome/remove-ansi-colors@v1
-      id: remove-ansi-colors-from-snyk-code-test
-      with:
-        colored: ${{ steps.snyk-code-test-output.outputs.snyk_code_test_result }}
     - name: Display snyk test result
       run: |
         echo '# Security Check： Open source vulnerabilities (SCA) :rocket:' >> $GITHUB_STEP_SUMMARY
-        echo "${{ steps.remove-ansi-colors-from-snyk-test.outputs.uncolored }}" >> $GITHUB_STEP_SUMMARY
         # sed で先頭行と末尾行の不要な罫線を消す
-        # cat snyk.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
+        cat -A snyk.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
     - name: Display snyk code test result
       run: |
         echo '# Security Check： Static Code Analysis (SAST) :rocket:' >> $GITHUB_STEP_SUMMARY
-        echo "${{ steps.remove-ansi-colors-from-snyk-code-test.outputs.uncolored }}" >> $GITHUB_STEP_SUMMARY
         # sed で先頭行と末尾行の不要な罫線を消す
-        # cat snyk_code.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
+        cat -v snyk_code.txt | sed '1d' | sed '$d' >> $GITHUB_STEP_SUMMARY
