@@ -54,6 +54,7 @@ jobs:
       continue-on-error: true
       run: |
         snyk_test_result=$(snyk test --severity-threshold=high)
+        echo $snyk_test_result
         echo "snyk_test_result=$snyk_test_result" >> "$GITHUB_OUTPUT"
         #  > snyk.txt
       env:
@@ -79,7 +80,7 @@ jobs:
       uses: marcransome/remove-ansi-colors@v1
       id: remove-ansi-colors-from-snyk-code-test
       with:
-        colored: ${{ steps.snyk-test-output.outputs.snyk_code_test_result }}
+        colored: ${{ steps.snyk-code-test-output.outputs.snyk_code_test_result }}
     - name: Display snyk test result
       run: |
         echo '# Security Check： Open source vulnerabilities (SCA) :rocket:' >> $GITHUB_STEP_SUMMARY
