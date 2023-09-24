@@ -49,7 +49,11 @@ jobs:
         snyk code test --sarif-file-output=snyk_code.sarif --severity-threshold=high
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    - name: Upload result to GitHub Code Scanning
+    - name: Upload snyk test result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: [snyk.sarif, snyk_code.sarif]
+        sarif_file: snyk.sarif
+    - name: Upload snyk code test result to GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: snyk_code.sarif
