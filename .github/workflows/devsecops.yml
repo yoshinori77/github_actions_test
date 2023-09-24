@@ -53,14 +53,14 @@ jobs:
       id: snyk-test-output
       continue-on-error: true
       run: |
-        snyk test --severity-threshold=high > snyk.txt
+        snyk test --severity-threshold=high 2>&1 | tee snyk.txt
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Snyk code test
       id: snyk-code-test-output
       continue-on-error: true
       run: |
-        snyk code test --severity-threshold=high > snyk_code.txt
+        snyk code test --severity-threshold=high 2>&1 | tee snyk_code.txt
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     # - name: Setup tmate session
