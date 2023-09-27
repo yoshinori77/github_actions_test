@@ -1,0 +1,78 @@
+name: CI/CD Workflow
+
+on: [push]
+
+env:
+  WORKON_HOME: /home/runner/.local/share/virtualenvs
+  REPOSITORY_NAME: ${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  statuses: write
+
+jobs:
+  build:
+    name: ビルド
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10.13'
+        cache: 'pipenv'
+        cache-dependency-path: |
+          Pipfile.lock
+    - name: Install dependencies
+      run: |
+        pip install pipenv
+        pipenv sync --dev
+
+  security-check:
+    name: セキュリティチェック
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - uses: snyk/actions/setup@master
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10.13'
+        cache: 'pipenv'
+        cache-dependency-path: |
+          Pipfile.lock
+    - name: Install pipenv
+      run: |
+        pip install pipenv
+        pipenv update
+        pipenv requirements --dev > requirements.txt
+    - name: Snyk test
+      id: snyk-test-output
+      continue-on-error: true
+      run: |
+        snyk test --severity-threshold=high 2>&1 | tee snyk.txt
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    - name: Snyk code test
+      id: snyk-code-test-output
+      continue-on-error: true
+      run: |
+        snyk code test --severity-threshold=high 2>&1 | tee snyk_code.txt
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   timeout-minutes: 30
+    - name: Display snyk test result
+      run: |
+        echo '# Security Check： Open source vulnerabilities (SCA) :rocket:' >> $GITHUB_STEP_SUMMARY
+        # sedでカラーシーケンスを除去
+        cat snyk.txt | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"  >> $GITHUB_STEP_SUMMARY
+    - name: Display snyk code test result
+      run: |
+        echo '# Security Check： Static Code Analysis (SAST) :rocket:' >> $GITHUB_STEP_SUMMARY
+        # sedでカラーシーケンスを除去
+        cat snyk_code.txt | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"  >> $GITHUB_STEP_SUMMARY
